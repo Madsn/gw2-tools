@@ -17,6 +17,8 @@ import expressGraphQL from 'express-graphql';
 import jwt from 'jsonwebtoken';
 import React from 'react';
 import ReactDOM from 'react-dom/server';
+import schedule from 'node-schedule';
+import gw2 from 'gw2-api';
 import Html from './components/Html';
 import { ErrorPage } from './routes/error/ErrorPage';
 import errorPageStyle from './routes/error/ErrorPage.css';
@@ -27,9 +29,10 @@ import models from './data/models';
 import schema from './data/schema';
 import routes from './routes';
 import assets from './assets'; // eslint-disable-line import/no-unresolved
-import { port, auth } from './config';
+import { port, auth, apikey } from './config';
 
 const app = express();
+const api = new gw2.gw2();
 
 //
 // Tell any CSS tooling (such as Material UI) to use all vendor prefixes if the
@@ -148,4 +151,14 @@ models.sync().catch(err => console.error(err.stack)).then(() => {
     console.log(`The server is running at http://localhost:${port}/`);
   });
 });
-/* eslint-enable no-console */
+
+api.setStorage(new gw2.memStore());
+api.setAPIKey(apikey);
+var j = schedule.scheduleJob('*/1 * * * *', function(){
+  api.getCharacters().then(function (res) {
+    for (var i = 0, len = res.length; i < len; i++) {
+      // This API call just returns an array of string character names.
+      console.log(res[i]);
+    }
+  });
+});

@@ -14,6 +14,8 @@ export const host = process.env.WEBSITE_HOSTNAME || `localhost:${port}`;
 
 export const databaseUrl = process.env.DATABASE_URL || 'sqlite:database.sqlite';
 
+export const apikey = process.env.GW2_API_KEY || '';
+
 export const analytics = {
 
   // https://analytics.google.com/
